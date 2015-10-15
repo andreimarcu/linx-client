@@ -78,6 +78,9 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64) {
 	req.Header.Set("User-Agent", "linx-client")
 	req.Header.Set("Accept", "application/json")
 
+	if Config.apikey != "" {
+		req.Header.Set("Linx-Api-Key", Config.apikey)
+	}
 	if deleteKey != "" {
 		req.Header.Set("Linx-Delete-Key", deleteKey)
 	}
@@ -105,6 +108,10 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64) {
 
 		addKey(myResp.Url, myResp.Delete_Key)
 
+	} else if resp.StatusCode == 401 {
+
+		checkErr(errors.New("Incorrect API key"))
+
 	} else {
 		var myResp RespErrJSON
 
@@ -126,6 +133,10 @@ func deleteUrl(url string) {
 
 	req.Header.Set("User-Agent", "linx-client")
 	req.Header.Set("Linx-Delete-Key", deleteKey)
+
+	if Config.apikey != "" {
+		req.Header.Set("Linx-Api-Key", Config.apikey)
+	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
