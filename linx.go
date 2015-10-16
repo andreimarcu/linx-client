@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"os/user"
 	"path"
@@ -77,7 +78,9 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64) {
 
 	reader := progress.NewProgressReader(fileName, bufio.NewReader(file), fileInfo.Size())
 
-	req, err := http.NewRequest("PUT", Config.siteurl+"upload/"+fileName, reader)
+	escapedFileName := url.QueryEscape(fileName)
+
+	req, err := http.NewRequest("PUT", Config.siteurl+"upload/"+escapedFileName, reader)
 	checkErr(err)
 
 	req.Header.Set("User-Agent", "linx-client")
