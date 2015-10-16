@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -189,7 +190,7 @@ func writeKeys() {
 }
 
 func parseConfig() {
-	cfgFilePath := config.StandardFileLocations("linx-client.conf")[0]
+	cfgFilePath := filepath.Join(configDir(), "linx-client.conf")
 	cfg, err := config.LoadOrCreate(cfgFilePath)
 	checkErr(err)
 
