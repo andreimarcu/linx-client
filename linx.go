@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"bitbucket.org/tshannon/config"
+	"mutantmonkey.in/code/golinx/progress"
 )
 
 type RespOkJSON struct {
@@ -68,11 +69,15 @@ func main() {
 }
 
 func upload(filePath string, deleteKey string, randomize bool, expiry int64) {
+	fileInfo, err := os.Stat(filePath)
+	checkErr(err)
 	file, err := os.Open(filePath)
 	checkErr(err)
 	fileName := path.Base(file.Name())
 
-	req, err := http.NewRequest("PUT", Config.siteurl+"upload/"+fileName, bufio.NewReader(file))
+	reader := progress.NewProgressReader(fileName, bufio.NewReader(file), fileInfo.Size())
+
+	req, err := http.NewRequest("PUT", Config.siteurl+"upload/"+fileName, reader)
 	checkErr(err)
 
 	req.Header.Set("User-Agent", "linx-client")
