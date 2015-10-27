@@ -214,7 +214,9 @@ func parseConfig() {
 			fmt.Print("Logfile path (ex: ~/.linxlog): ")
 			fmt.Scanf("%s", &Config.logfile)
 
-			usr, _ := user.Current()
+			usr, err := user.Current()
+			checkErr(err)
+
 			homedir := usr.HomeDir + "/"
 			Config.logfile = strings.Replace(Config.logfile, "~/", homedir, 1)
 
