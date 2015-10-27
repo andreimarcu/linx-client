@@ -12,6 +12,10 @@ GOOS=freebsd GOARCH=amd64 go build -o "$name"freebsd-amd64
 
 GOOS=freebsd GOARCH=386 go build -o "$name"freebsd-386
 
+GOOS=openbsd GOARCH=amd64 go build -o "$name"openbsd-amd64
+
+GOOS=openbsd GOARCH=386 go build -o "$name"bsd-386
+
 GOOS=linux GOARCH=arm go build -o "$name"linux-arm
 
 GOOS=linux GOARCH=amd64 go build -o "$name"linux-amd64
