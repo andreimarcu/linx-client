@@ -2,20 +2,20 @@ package main
 
 import (
 	"os"
-	"os/user"
 	"path/filepath"
 )
 
-func configDir() string {
-	confDir := os.Getenv("XDG_CONFIG_HOME")
-	if confDir != "" {
-		return confDir
+func getHomeDir() (homeDir string) {
+	homeDir = os.Getenv("HOME")
+	if homeDir == "" {
+		homeDir = getInput("Path to home directory", false)
 	}
 
-	usr, err := user.Current()
-	if err != nil {
-		return ""
-	}
+	return
+}
 
-	return filepath.Join(usr.HomeDir, ".config")
+func getConfigDir() (configDir string) {
+	configDir = filepath.Join(getHomeDir(), ".config")
+
+	return
 }

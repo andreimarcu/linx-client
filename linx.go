@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"os/user"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -190,7 +189,7 @@ func writeKeys() {
 }
 
 func parseConfig() {
-	cfgFilePath := filepath.Join(configDir(), "linx-client.conf")
+	cfgFilePath := filepath.Join(getConfigDir(), "linx-client.conf")
 	cfg, err := config.LoadOrCreate(cfgFilePath)
 	checkErr(err)
 
@@ -202,8 +201,8 @@ func parseConfig() {
 		fmt.Println("Configuring linx-client")
 		fmt.Println()
 		for Config.siteurl == "" {
-			fmt.Print("Site url (ex: https://linx.example.com/): ")
-			fmt.Scanf("%s", &Config.siteurl)
+			Config.siteurl = getInput("Site url (ex: https://linx.example.com/)", false)
+
 			if lastChar := Config.siteurl[len(Config.siteurl)-1:]; lastChar != "/" {
 				Config.siteurl = Config.siteurl + "/"
 			}
@@ -211,33 +210,25 @@ func parseConfig() {
 		cfg.SetValue("siteurl", Config.siteurl)
 
 		for Config.logfile == "" {
-			fmt.Print("Logfile path (ex: ~/.linxlog): ")
-			fmt.Scanf("%s", &Config.logfile)
+			Config.logfile = getInput("Logfile path (ex: ~/.linxlog)", false)
 
-			usr, err := user.Current()
-			checkErr(err)
+			homeDir := getHomeDir()
+			if lastChar := homeDir[len(homeDir)-1:]; lastChar != "/" {
+				homeDir = homeDir + "/"
+			}
 
-			homedir := usr.HomeDir + "/"
-			Config.logfile = strings.Replace(Config.logfile, "~/", homedir, 1)
+			Config.logfile = strings.Replace(Config.logfile, "~/", homeDir, 1)
 
 		}
 		cfg.SetValue("logfile", Config.logfile)
 
 		if Config.apikey == "" {
-			fmt.Print("API key (leave blank if instance is public): ")
-			fmt.Scanf("%s", &Config.apikey)
+			Config.apikey = getInput("API key (leave blank if instance is public)", true)
 		}
 		cfg.SetValue("apikey", Config.apikey)
 
 		cfg.Write()
 
 		fmt.Printf("Configuration written at %s\n", cfgFilePath)
-	}
-}
-
-func checkErr(err error) {
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
 	}
 }

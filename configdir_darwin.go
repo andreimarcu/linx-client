@@ -1,15 +1,21 @@
 package main
 
 import (
-	"os/user"
+	"os"
 	"path/filepath"
 )
 
-func configDir() string {
-	usr, err := user.Current()
-	if err != nil {
-		return ""
+func getHomeDir() (homeDir string) {
+	homeDir = os.Getenv("HOME")
+	if homeDir == "" {
+		homeDir = getInput("Path to home directory", false)
 	}
 
-	return filepath.Join(usr.HomeDir, ".config")
+	return
+}
+
+func getConfigDir() (configDir string) {
+	configDir = filepath.Join(getHomeDir(), ".config")
+
+	return
 }
