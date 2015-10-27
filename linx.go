@@ -45,6 +45,7 @@ func main() {
 
 	var del bool
 	var randomize bool
+	var overwrite bool
 	var expiry int64
 	var deleteKey string
 
@@ -56,6 +57,8 @@ func main() {
 		"Time in seconds until file expires (ex: -e 600)")
 	flag.StringVar(&deleteKey, "deletekey", "",
 		"Specify your own delete key for the upload(s) (ex: -deletekey mysecret)")
+	flag.BoolVar(&overwrite, "o", false,
+		"Overwrite file (assuming you have its delete key")
 	flag.Parse()
 
 	if del {
@@ -64,12 +67,12 @@ func main() {
 		}
 	} else {
 		for _, fileName := range flag.Args() {
-			upload(fileName, deleteKey, randomize, expiry)
+			upload(fileName, deleteKey, randomize, expiry, overwrite)
 		}
 	}
 }
 
-func upload(filePath string, deleteKey string, randomize bool, expiry int64) {
+func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool) {
 	fileInfo, err := os.Stat(filePath)
 	checkErr(err)
 	file, err := os.Open(filePath)
@@ -97,6 +100,15 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64) {
 	}
 	if expiry != 0 {
 		req.Header.Set("Linx-Expiry", strconv.FormatInt(expiry, 10))
+	}
+	if overwrite {
+		fileUrl := Config.siteurl + fileName
+		deleteKey, exists := keys[fileUrl]
+		if !exists {
+			checkErr(errors.New("No delete key for " + fileUrl))
+		}
+
+		req.Header.Set("Linx-Delete-Key", deleteKey)
 	}
 
 	client := &http.Client{}

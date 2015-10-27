@@ -37,7 +37,7 @@ Options
 - ```-r``` -- Randomize filename  
 - ```-e 600``` -- Time until file expires in seconds  
 - ```-deletekey mysecret``` -- Specify deletion key
-
+- ```-o``` -- Overwrite file if you have its deletion key
 
 #### Delete file(s)
 
