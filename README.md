@@ -40,10 +40,32 @@ https://linx.example.com/file.ext
 
 Options  
 
+- ```-f file.ext``` -- Specify a desired filename (if different from the actual one)  
 - ```-r``` -- Randomize filename  
 - ```-e 600``` -- Time until file expires in seconds  
 - ```-deletekey mysecret``` -- Specify deletion key
 - ```-o``` -- Overwrite file if you have its deletion key
+
+
+#### Upload from stdin
+```
+$ echo "hello there" | linx-client -  
+https://linx.example.com/random.txt  
+```  
+
+Note: you can specify the ```-f``` flag to specify a filename as such:  
+```
+$ echo "hello there" | linx-client -f hello.txt -  
+https://linx.example.com/hello.txt  
+```  
+
+
+#### Overwrite file
+Assuming you have previously uploaded ```file.ext``` using linx-client (so that you have its deletion key), you can replace the file as such:
+```
+$ linx-client -o file.ext  
+https://linx.example.com/file.ext  
+```  
 
 #### Delete file(s)
 

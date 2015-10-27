@@ -2,10 +2,12 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -48,6 +50,7 @@ func main() {
 	var overwrite bool
 	var expiry int64
 	var deleteKey string
+	var desiredFileName string
 
 	flag.BoolVar(&del, "d", false,
 		"Delete file at url (ex: -d https://linx.example.com/myphoto.jpg")
@@ -57,6 +60,8 @@ func main() {
 		"Time in seconds until file expires (ex: -e 600)")
 	flag.StringVar(&deleteKey, "deletekey", "",
 		"Specify your own delete key for the upload(s) (ex: -deletekey mysecret)")
+	flag.StringVar(&desiredFileName, "f", "",
+		"Specify the desired filename if different from the actual filename or if file from stdin")
 	flag.BoolVar(&overwrite, "o", false,
 		"Overwrite file (assuming you have its delete key")
 	flag.Parse()
@@ -67,19 +72,40 @@ func main() {
 		}
 	} else {
 		for _, fileName := range flag.Args() {
-			upload(fileName, deleteKey, randomize, expiry, overwrite)
+			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName)
 		}
 	}
 }
 
-func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool) {
-	fileInfo, err := os.Stat(filePath)
-	checkErr(err)
-	file, err := os.Open(filePath)
-	checkErr(err)
-	fileName := path.Base(file.Name())
+func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string) {
+	var reader io.Reader
+	var fileName string
 
-	reader := progress.NewProgressReader(fileName, bufio.NewReader(file), fileInfo.Size())
+	if filePath == "-" {
+		if desiredFileName == "" {
+			fileName = ".txt"
+		} else {
+			fileName = desiredFileName
+		}
+
+		byt, err := ioutil.ReadAll(os.Stdin)
+		checkErr(err)
+
+		reader = progress.NewProgressReader(fileName, bytes.NewReader(byt), int64(len(byt)))
+	} else {
+		fileInfo, err := os.Stat(filePath)
+		checkErr(err)
+		file, err := os.Open(filePath)
+		checkErr(err)
+
+		if desiredFileName == "" {
+			fileName = path.Base(file.Name())
+		} else {
+			fileName = desiredFileName
+		}
+
+		reader = progress.NewProgressReader(fileName, bufio.NewReader(file), fileInfo.Size())
+	}
 
 	escapedFileName := url.QueryEscape(fileName)
 
