@@ -6,6 +6,12 @@ Simple client for [linx-server](https://github.com/andreimarcu/linx-server)
 Uses a json configuration and logfile (for storing deletion keys of uploads)   
 
 
+Get release and run
+-------------------
+1. Grab the latest binary from the [releases](https://github.com/andreimarcu/linx-client/releases)
+2. Run ```./linx-client...```
+
+
 Configuration
 -------------
 
