@@ -82,12 +82,6 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 	var fileName string
 
 	if filePath == "-" {
-		if desiredFileName == "" {
-			fileName = ".txt"
-		} else {
-			fileName = desiredFileName
-		}
-
 		byt, err := ioutil.ReadAll(os.Stdin)
 		checkErr(err)
 
