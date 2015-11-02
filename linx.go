@@ -27,6 +27,7 @@ type RespOkJSON struct {
 	Delete_Key string
 	Expiry     string
 	Size       string
+	Sha256sum  string
 }
 
 type RespErrJSON struct {
@@ -80,12 +81,19 @@ func main() {
 func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string) {
 	var reader io.Reader
 	var fileName string
+	var ssum string
 
 	if filePath == "-" {
 		byt, err := ioutil.ReadAll(os.Stdin)
 		checkErr(err)
 
-		reader = progress.NewProgressReader(fileName, bytes.NewReader(byt), int64(len(byt)))
+		br := bytes.NewReader(byt)
+
+		ssum = sha256sum(br)
+		br.Seek(0, 0)
+
+		reader = progress.NewProgressReader(fileName, br, int64(len(byt)))
+
 	} else {
 		fileInfo, err := os.Stat(filePath)
 		checkErr(err)
@@ -98,7 +106,11 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 			fileName = desiredFileName
 		}
 
-		reader = progress.NewProgressReader(fileName, bufio.NewReader(file), fileInfo.Size())
+		br := bufio.NewReader(file)
+		ssum = sha256sum(br)
+		file.Seek(0, 0)
+
+		reader = progress.NewProgressReader(fileName, br, fileInfo.Size())
 	}
 
 	escapedFileName := url.QueryEscape(fileName)
@@ -143,6 +155,10 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 
 		err := json.Unmarshal(body, &myResp)
 		checkErr(err)
+
+		if myResp.Sha256sum != ssum {
+			fmt.Println("Warning: sha256sum does not match.")
+		}
 
 		fmt.Println(myResp.Url)
 

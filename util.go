@@ -1,7 +1,11 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -23,4 +27,15 @@ func getInput(query string, allowBlank bool) (input string) {
 	}
 
 	return
+}
+
+func sha256sum(r io.Reader) string {
+	hasher := sha256.New()
+
+	_, err := io.Copy(hasher, r)
+	if err == nil {
+		return hex.EncodeToString(hasher.Sum(nil))
+	} else {
+		return ""
+	}
 }
