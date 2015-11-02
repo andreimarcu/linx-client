@@ -43,15 +43,13 @@ var Config struct {
 var keys map[string]string
 
 func main() {
-	parseConfig()
-	getKeys()
-
 	var del bool
 	var randomize bool
 	var overwrite bool
 	var expiry int64
 	var deleteKey string
 	var desiredFileName string
+	var configPath string
 
 	flag.BoolVar(&del, "d", false,
 		"Delete file at url (ex: -d https://linx.example.com/myphoto.jpg")
@@ -63,9 +61,14 @@ func main() {
 		"Specify your own delete key for the upload(s) (ex: -deletekey mysecret)")
 	flag.StringVar(&desiredFileName, "f", "",
 		"Specify the desired filename if different from the actual filename or if file from stdin")
+	flag.StringVar(&configPath, "c", "",
+		"Specify a non-default config path")
 	flag.BoolVar(&overwrite, "o", false,
 		"Overwrite file (assuming you have its delete key")
 	flag.Parse()
+
+	parseConfig(configPath)
+	getKeys()
 
 	if del {
 		for _, url := range flag.Args() {
@@ -236,8 +239,15 @@ func writeKeys() {
 	checkErr(err)
 }
 
-func parseConfig() {
-	cfgFilePath := filepath.Join(getConfigDir(), "linx-client.conf")
+func parseConfig(configPath string) {
+	var cfgFilePath string
+
+	if configPath == "" {
+		cfgFilePath = filepath.Join(getConfigDir(), "linx-client.conf")
+	} else {
+		cfgFilePath = configPath
+	}
+
 	cfg, err := config.LoadOrCreate(cfgFilePath)
 	checkErr(err)
 

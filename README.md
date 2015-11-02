@@ -5,6 +5,14 @@ Simple client for [linx-server](https://github.com/andreimarcu/linx-server)
 
 Uses a json configuration and logfile (for storing deletion keys of uploads)   
 
+### Features  
+
+- Upload file and store deletion key  
+- Upload from stdin and store deletion key  
+- Overwrite file using stored deletion key  
+- Delete file using stored deletion key  
+- Sha256sum client-server matching  
+
 
 Get release and run
 -------------------
@@ -45,6 +53,7 @@ Options
 - ```-e 600``` -- Time until file expires in seconds  
 - ```-deletekey mysecret``` -- Specify deletion key
 - ```-o``` -- Overwrite file if you have its deletion key
+- ```-c myconfig.json``` -- Use non-default config file (can be useful if using more than one linx-server instance). This option will create a config if file does not exist.
 
 
 #### Upload from stdin
@@ -54,6 +63,7 @@ https://linx.example.com/random.txt
 ```  
 
 Note: you can specify the ```-f``` flag to specify a filename as such:  
+
 ```
 $ echo "hello there" | linx-client -f hello.txt -  
 https://linx.example.com/hello.txt  
@@ -62,6 +72,7 @@ https://linx.example.com/hello.txt
 
 #### Overwrite file
 Assuming you have previously uploaded ```file.ext``` using linx-client (so that you have its deletion key), you can replace the file as such:
+
 ```
 $ linx-client -o file.ext  
 https://linx.example.com/file.ext  
