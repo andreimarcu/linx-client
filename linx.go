@@ -90,6 +90,8 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 		byt, err := ioutil.ReadAll(os.Stdin)
 		checkErr(err)
 
+		fileName = desiredFileName
+
 		br := bytes.NewReader(byt)
 
 		ssum = sha256sum(br)
