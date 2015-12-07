@@ -8,12 +8,13 @@ fi
 
 echo "Building version ${version}..."
 
-mkdir -p "binairies/$version"
+bin_dir="binaries/$version"
+mkdir -p "$bin_dir"
 
 build() {
 	echo "Building for $1-${2}..."
 	env GOOS="$1" GOARCH="$2" go build \
-	  -o "binairies/$version/linx-client-v${version}_$1-$2"
+	  -o "binaries/$version/linx-client-v${version}_$1-$2"
 }
 
 for os in darwin freebsd openbsd linux windows; do
