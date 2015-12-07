@@ -1,27 +1,24 @@
 #!/bin/bash
 
-version="$1"
-mkdir -p "binairies/""$version"
-name="binairies/""$version""/linx-client-v""$version""_"
+if [ -n "$1" ]; then
+	version="$1"
+else
+	version=$(git tag | grep ^v | tail -1 | sed 's/^v//')
+fi
 
-GOOS=darwin GOARCH=amd64 go build -o "$name"osx-amd64
+echo "Building version ${version}..."
 
-GOOS=darwin GOARCH=386 go build -o "$name"osx-386
+mkdir -p "binairies/$version"
 
-GOOS=freebsd GOARCH=amd64 go build -o "$name"freebsd-amd64
+build() {
+	echo "Building for $1-${2}..."
+	env GOOS="$1" GOARCH="$2" go build \
+	  -o "binairies/$version/linx-client-v${version}_$1-$2"
+}
 
-GOOS=freebsd GOARCH=386 go build -o "$name"freebsd-386
-
-GOOS=openbsd GOARCH=amd64 go build -o "$name"openbsd-amd64
-
-GOOS=openbsd GOARCH=386 go build -o "$name"bsd-386
-
-GOOS=linux GOARCH=arm go build -o "$name"linux-arm
-
-GOOS=linux GOARCH=amd64 go build -o "$name"linux-amd64
-
-GOOS=linux GOARCH=386 go build -o "$name"linux-386
-
-GOOS=windows GOARCH=amd64 go build -o "$name"windows-amd64.exe
-
-GOOS=windows GOARCH=386 go build -o "$name"windows-386.exe
+for os in darwin freebsd openbsd linux windows; do
+	for arch in amd64 386; do
+		build "$os" "$arch"
+	done
+done
+build linux arm
