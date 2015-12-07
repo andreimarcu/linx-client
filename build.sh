@@ -21,4 +21,5 @@ for os in darwin freebsd openbsd linux windows; do
 		build "$os" "$arch"
 	done
 done
+
 build linux arm
