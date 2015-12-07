@@ -1,0 +1,68 @@
+.\" Written in 2015 by Jean-Philippe Ouellet <jpo@vt.edu>
+.\" Public Domain / CC0
+.Dd $\&Mdocdate$
+.Dt LINX-CLIENT 1
+.Os
+.Sh NAME
+.Nm linx-client
+.Nd client for linx file-sharing site
+.Sh SYNOPSIS
+.Nm
+.Op Fl or
+.Op Fl c config.json
+.Op Fl e Ar seconds
+.Op Fl f Ar name.ext
+.Op Fl deletekey Ar secret
+.Ar
+.Sh DESCRIPTION
+.Nm
+uploads files to sites that support the linx-server API.
+.Bl -tag
+.It Fl c Ar config.json
+Specify configuration file.
+Useful if using more than one linx-server instance.
+Will create the file if it does not exist.
+.It Fl e Ar seconds
+Request that the linx-server make the file unavailable after
+.Ar seconds
+seconds.
+.It Fl f Ar name.ext
+Uploads
+.Ar file ,
+pretending its name is actually
+.Ar name.ext .
+Commonly used for specifying names for things on stdin.
+.It Fl o
+Overwrite
+.Ar file
+if you have its deletion key.
+.It Fl r
+Randomize filename.
+.It Fl deletekey Ar secret
+Tries to delete remote file named
+.Ar file
+using
+.Ar secret
+as the deletion key.
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+Upload from stdin:
+.Bd -literal -offset indent -compact
+$ echo "hello there" | linx-client -
+https://linx.li/hello.txt
+.Ed
+.Pp
+Specify filename for stdin:
+.Bd -literal -offset indent -compact
+$ echo "hello there" | linx-client -f hello.txt -
+https://linx.li/hello.txt
+.Ed
+.Sh SEE ALSO
+.Xr curl 1 ,
+.Xr linx-server 1
+.Sh STANDARDS
+.Lk https://linx.li/API/ "linx-server API"
+.Sh CAVEATS
+There is no guarantee that the server being used actually removes
+the file when you ask it to via expiration or deletion requests.
