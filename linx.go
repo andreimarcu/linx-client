@@ -55,7 +55,7 @@ func main() {
 	var deleteKey string
 	var desiredFileName string
 	var configPath string
-	var useClipboard bool
+	var noClipboard bool
 	var useShortURL bool
 
 	flag.BoolVar(&del, "d", false,
@@ -72,8 +72,8 @@ func main() {
 		"Specify a non-default config path")
 	flag.BoolVar(&overwrite, "o", false,
 		"Overwrite file (assuming you have its delete key")
-	flag.BoolVar(&useClipboard, "cb", true,
-		"Copy url into clipboard")
+	flag.BoolVar(&noClipboard, "no-cb", false,
+		"Disable automatic insertion into clipboard")
 	flag.BoolVar(&useShortURL, "s", false,
 		"Fetch shorted url")
 	flag.Parse()
@@ -87,12 +87,12 @@ func main() {
 		}
 	} else {
 		for _, fileName := range flag.Args() {
-			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, useClipboard, useShortURL)
+			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard, useShortURL)
 		}
 	}
 }
 
-func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string, useClipboard bool, useShortURL bool) {
+func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string, noClipboard bool, useShortURL bool) {
 	var reader io.Reader
 	var fileName string
 	var ssum string
@@ -187,11 +187,11 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 			}
 		}
 
-		if useClipboard {
+		if noClipboard {
+			fmt.Println(finalURL)
+		} else {
 			fmt.Printf("Copied %s into clipboard!\n", finalURL)
 			clipboard.WriteAll(finalURL)
-		} else {
-			fmt.Println(finalURL)
 		}
 
 		addKey(myResp.Url, myResp.Delete_Key)
