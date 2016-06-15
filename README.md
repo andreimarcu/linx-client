@@ -54,6 +54,8 @@ Options
 - ```-deletekey mysecret``` -- Specify deletion key
 - ```-o``` -- Overwrite file if you have its deletion key
 - ```-c myconfig.json``` -- Use non-default config file (can be useful if using more than one linx-server instance). This option will create a config if file does not exist.
+- ```-no-cb``` -- Disable automatic insertion into clipboard
+- ```-s``` -- Fetch the short url instead
 
 
 #### Upload from stdin
