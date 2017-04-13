@@ -56,6 +56,7 @@ func main() {
 	var desiredFileName string
 	var configPath string
 	var noClipboard bool
+	var useSelifURL bool
 	var useShortURL bool
 
 	flag.BoolVar(&del, "d", false,
@@ -74,6 +75,8 @@ func main() {
 		"Overwrite file (assuming you have its delete key")
 	flag.BoolVar(&noClipboard, "no-cb", false,
 		"Disable automatic insertion into clipboard")
+	flag.BoolVar(&useSelifURL, "selif", false,
+		"Return selif url")
 	flag.BoolVar(&useShortURL, "s", false,
 		"Fetch shorted url")
 	flag.Parse()
@@ -87,12 +90,12 @@ func main() {
 		}
 	} else {
 		for _, fileName := range flag.Args() {
-			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard, useShortURL)
+			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard, useSelifURL, useShortURL)
 		}
 	}
 }
 
-func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string, noClipboard bool, useShortURL bool) {
+func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string, noClipboard bool, useSelifURL bool, useShortURL bool) {
 	var reader io.Reader
 	var fileName string
 	var ssum string
@@ -177,6 +180,16 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 		}
 
 		finalURL := myResp.Url
+
+		if useSelifURL {
+			length := len(strings.Split(myResp.Url, "/")) + 1
+			slice := make([]string, length)
+			copy(slice, strings.Split(myResp.Url, "/"))
+
+			copy(slice[length - 1:], slice[length - 2:])
+			copy(slice[length - 2:], []string{"selif"})
+			finalURL = strings.Join(slice, "/")
+		}
 
 		if useShortURL {
 			shortenedURL, err := getShortURL(myResp.Url + "/short")
