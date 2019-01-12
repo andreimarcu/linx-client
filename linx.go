@@ -35,10 +35,6 @@ type RespErrJSON struct {
 	Error string
 }
 
-type RespShortURLJSON struct {
-	ShortURL string `json:"shortUrl"`
-}
-
 var Config struct {
 	siteurl string
 	logfile string
@@ -56,7 +52,6 @@ func main() {
 	var desiredFileName string
 	var configPath string
 	var noClipboard bool
-	var useShortURL bool
 
 	flag.BoolVar(&del, "d", false,
 		"Delete file at url (ex: -d https://linx.example.com/myphoto.jpg")
@@ -74,8 +69,6 @@ func main() {
 		"Overwrite file (assuming you have its delete key")
 	flag.BoolVar(&noClipboard, "no-cb", false,
 		"Disable automatic insertion into clipboard")
-	flag.BoolVar(&useShortURL, "s", false,
-		"Fetch shorted url")
 	flag.Parse()
 
 	parseConfig(configPath)
@@ -87,12 +80,12 @@ func main() {
 		}
 	} else {
 		for _, fileName := range flag.Args() {
-			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard, useShortURL)
+			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard)
 		}
 	}
 }
 
-func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string, noClipboard bool, useShortURL bool) {
+func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string, noClipboard bool) {
 	var reader io.Reader
 	var fileName string
 	var ssum string
@@ -176,22 +169,11 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 			fmt.Println("Warning: sha256sum does not match.")
 		}
 
-		finalURL := myResp.Url
-
-		if useShortURL {
-			shortenedURL, err := getShortURL(myResp.Url + "/short")
-			if err != nil {
-				fmt.Printf("Could not get short url for %s!", myResp.Url)
-			} else {
-				finalURL = shortenedURL
-			}
-		}
-
 		if noClipboard {
-			fmt.Println(finalURL)
+			fmt.Println(myResp.Url)
 		} else {
-			fmt.Printf("Copied %s into clipboard!\n", finalURL)
-			clipboard.WriteAll(finalURL)
+			fmt.Printf("Copied %s into clipboard!\n", myResp.Url)
+			clipboard.WriteAll(myResp.Url)
 		}
 
 		addKey(myResp.Url, myResp.Delete_Key)
@@ -208,41 +190,6 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 
 		fmt.Printf("Could not upload %s: %s\n", fileName, myResp.Error)
 	}
-}
-
-func getShortURL(url string) (string, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return "", err
-	}
-
-	req.Header.Set("User-Agent", "linx-client")
-	req.Header.Set("Accept", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		respError := new(RespErrJSON)
-		err := json.NewDecoder(resp.Body).Decode(respError)
-		if err != nil {
-			return "", err
-		}
-
-		return "", errors.New(respError.Error)
-	}
-
-	respShortURL := new(RespShortURLJSON)
-	err = json.NewDecoder(resp.Body).Decode(respShortURL)
-	if err != nil {
-		return "", err
-	}
-
-	return respShortURL.ShortURL, nil
 }
 
 func deleteUrl(url string) {
