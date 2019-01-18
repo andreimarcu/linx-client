@@ -1,12 +1,12 @@
 package main
 
 import (
-	"crypto/sha256"
 	"encoding/hex"
-
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/minio/sha256-simd"
 )
 
 func checkErr(err error) {
