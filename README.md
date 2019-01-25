@@ -55,7 +55,7 @@ Options
 - ```-o``` -- Overwrite file if you have its deletion key
 - ```-c myconfig.json``` -- Use non-default config file (can be useful if using more than one linx-server instance). This option will create a config if file does not exist.
 - ```-no-cb``` -- Disable automatic insertion into clipboard
-
+- ```-selif``` -- Return selif url (direct url)
 
 #### Upload from stdin
 ```
