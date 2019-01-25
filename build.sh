@@ -1,8 +1,8 @@
 #!/bin/bash
 
 version="$1"
-mkdir -p "binairies/""$version"
-name="binairies/""$version""/linx-client-v""$version""_"
+mkdir -p "binaries/""$version"
+name="binaries/""$version""/linx-client-v""$version""_"
 
 GOOS=darwin GOARCH=amd64 go build -o "$name"osx-amd64
 
