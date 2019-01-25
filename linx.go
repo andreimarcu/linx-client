@@ -29,6 +29,7 @@ type RespOkJSON struct {
 	Expiry     string
 	Size       string
 	Sha256sum  string
+	Direct_Url string `json:",omitempty"`
 }
 
 type RespErrJSON struct {
@@ -52,6 +53,7 @@ func main() {
 	var desiredFileName string
 	var configPath string
 	var noClipboard bool
+	var useSelifURL bool
 
 	flag.BoolVar(&del, "d", false,
 		"Delete file at url (ex: -d https://linx.example.com/myphoto.jpg")
@@ -69,6 +71,8 @@ func main() {
 		"Overwrite file (assuming you have its delete key")
 	flag.BoolVar(&noClipboard, "no-cb", false,
 		"Disable automatic insertion into clipboard")
+	flag.BoolVar(&useSelifURL, "selif", false,
+		"Return selif url")
 	flag.Parse()
 
 	parseConfig(configPath)
@@ -80,12 +84,12 @@ func main() {
 		}
 	} else {
 		for _, fileName := range flag.Args() {
-			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard)
+			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard, useSelifURL)
 		}
 	}
 }
 
-func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string, noClipboard bool) {
+func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string, noClipboard bool, useSelifURL bool) {
 	var reader io.Reader
 	var fileName string
 	var ssum string
@@ -161,6 +165,7 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 
 	if resp.StatusCode == 200 {
 		var myResp RespOkJSON
+		var returnUrl string
 
 		err := json.Unmarshal(body, &myResp)
 		checkErr(err)
@@ -169,11 +174,17 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 			fmt.Println("Warning: sha256sum does not match.")
 		}
 
-		if noClipboard {
-			fmt.Println(myResp.Url)
+		if useSelifURL && len(myResp.Direct_Url) != 0 {
+			returnUrl = myResp.Direct_Url
 		} else {
-			fmt.Printf("Copied %s into clipboard!\n", myResp.Url)
-			clipboard.WriteAll(myResp.Url)
+			returnUrl = myResp.Url
+		}
+
+		if noClipboard {
+			fmt.Println(returnUrl)
+		} else {
+			fmt.Printf("Copied %s into clipboard!\n", returnUrl)
+			clipboard.WriteAll(returnUrl)
 		}
 
 		addKey(myResp.Url, myResp.Delete_Key)
