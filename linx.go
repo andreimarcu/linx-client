@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 
+	"golang.org/x/crypto/ssh/terminal"
 	"bitbucket.org/tshannon/config"
 	"github.com/atotto/clipboard"
 	"mutantmonkey.in/code/golinx/progress"
@@ -83,8 +84,18 @@ func main() {
 			deleteUrl(url)
 		}
 	} else {
-		for _, fileName := range flag.Args() {
-			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard, useSelifURL)
+		if len(flag.Args()) == 0 {
+			// If no arguments are provided, paste stdin only if it is piped.
+			if terminal.IsTerminal(int(os.Stdin.Fd())) {
+				flag.Usage()
+				os.Exit(2)
+			} else {
+				upload("-", deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard, useSelifURL)
+			}
+		} else {
+			for _, fileName := range flag.Args() {
+				upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard, useSelifURL)
+			}
 		}
 	}
 }
