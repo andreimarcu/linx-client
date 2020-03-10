@@ -50,6 +50,7 @@ func main() {
 	var overwrite bool
 	var expiry int64
 	var deleteKey string
+	var accessKey string
 	var desiredFileName string
 	var configPath string
 	var noClipboard bool
@@ -63,6 +64,8 @@ func main() {
 		"Time in seconds until file expires (ex: -e 600)")
 	flag.StringVar(&deleteKey, "deletekey", "",
 		"Specify your own delete key for the upload(s) (ex: -deletekey mysecret)")
+	flag.StringVar(&accessKey, "accesskey", "",
+		"Specify an access key to limit access to the file with a password")
 	flag.StringVar(&desiredFileName, "f", "",
 		"Specify the desired filename if different from the actual filename or if file from stdin")
 	flag.StringVar(&configPath, "c", "",
@@ -84,12 +87,12 @@ func main() {
 		}
 	} else {
 		for _, fileName := range flag.Args() {
-			upload(fileName, deleteKey, randomize, expiry, overwrite, desiredFileName, noClipboard, useSelifURL)
+			upload(fileName, deleteKey, accessKey, randomize, expiry, overwrite, desiredFileName, noClipboard, useSelifURL)
 		}
 	}
 }
 
-func upload(filePath string, deleteKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string, noClipboard bool, useSelifURL bool) {
+func upload(filePath string, deleteKey string, accessKey string, randomize bool, expiry int64, overwrite bool, desiredFileName string, noClipboard bool, useSelifURL bool) {
 	var reader io.Reader
 	var fileName string
 	var ssum string
@@ -139,6 +142,9 @@ func upload(filePath string, deleteKey string, randomize bool, expiry int64, ove
 	}
 	if deleteKey != "" {
 		req.Header.Set("Linx-Delete-Key", deleteKey)
+	}
+	if accessKey != "" {
+		req.Header.Set("Linx-Access-Key", accessKey)
 	}
 	if randomize {
 		req.Header.Set("Linx-Randomize", "yes")
