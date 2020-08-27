@@ -17,7 +17,7 @@ import (
 	"strconv"
 	"strings"
 
-	"bitbucket.org/tshannon/config"
+	"github.com/timshannon/config"
 	"github.com/atotto/clipboard"
 	"mutantmonkey.in/code/golinx/progress"
 )
