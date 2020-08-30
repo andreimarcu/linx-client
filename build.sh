@@ -16,7 +16,9 @@ GOOS=openbsd GOARCH=amd64 go build -o "$name"openbsd-amd64
 
 GOOS=openbsd GOARCH=386 go build -o "$name"bsd-386
 
-GOOS=linux GOARCH=arm go build -o "$name"linux-arm
+GOOS=linux GOARCH=arm GOARM=7 go build -o "$name"linux-armv7
+
+GOOS=linux GOARCH=arm64 go build -o "$name"linux-arm64
 
 GOOS=linux GOARCH=amd64 go build -o "$name"linux-amd64
 
