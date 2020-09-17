@@ -19,7 +19,7 @@ import (
 
 	"github.com/timshannon/config"
 	"github.com/atotto/clipboard"
-	"mutantmonkey.in/code/golinx/progress"
+	"github.com/mutantmonkey/golinx/progress"
 )
 
 type RespOkJSON struct {
