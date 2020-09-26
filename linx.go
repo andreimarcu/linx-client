@@ -66,6 +66,8 @@ func main() {
 		"Specify your own delete key for the upload(s) (ex: -deletekey mysecret)")
 	flag.StringVar(&accessKey, "accesskey", "",
 		"Specify an access key to limit access to the file with a password")
+	flag.StringVar(&accessKey, "pass", "",
+		"Alias for -accesskey")
 	flag.StringVar(&desiredFileName, "f", "",
 		"Specify the desired filename if different from the actual filename or if file from stdin")
 	flag.StringVar(&configPath, "c", "",
