@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -250,10 +249,14 @@ func getApiKey() string {
 		return ""
 	}
 
-	out, err := exec.Command(Config.apikeycmd).Output()
+	apikey, err := runCmdFirstLine(Config.apikeycmd)
 	checkErr(err)
 
-	return string(out)
+	if apikey == "" {
+		checkErr(fmt.Errorf("Command did not produce an API key: %s", Config.apikeycmd))
+	}
+
+	return apikey
 }
 
 func addKey(url string, deleteKey string) {
