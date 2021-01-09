@@ -26,14 +26,13 @@ Configuration
 When you first run linx-client, you will be prompted to configure the instance url, logfile path and api keys. 
 
 ```
-$ ./linx-client  
-Configuring linx-client  
-  
-Site url (ex: https://linx.example.com/): https://linx.example.com/  
-Logfile path (ex: ~/.linxlog): ~/.linxlog  
-API key (leave blank if instance is public):  
-  
-Configuration written at ~/.config/linx-client.conf  
+$ ./linx-client
+Configuring linx-client
+
+Site url (ex: https://linx.example.com/): https://linx.example.com/
+Logfile path (ex: ~/.linxlog): ~/.linxlog
+API key retreival command (ex 'pass show linx-client', leave blank if instance is public): pass show linx-client
+Configuration written at /home/kalle/.config/linx-client.conf
 ```
 
 Usage
