@@ -82,6 +82,7 @@ func runCmdFirstLine(cmdAndArgs string) (string, error) {
 	scanner := bufio.NewReader(stdout)
 
 	line, err := scanner.ReadString('\n')
+	line = strings.TrimRight(line, "\n")
 
 	if err := cmd.Wait(); err != nil {
 		return line, err
