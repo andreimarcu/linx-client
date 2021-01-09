@@ -36,7 +36,7 @@ Configuration written at /home/kalle/.config/linx-client.conf
 ```
 
 
-### Loading API key from external application
+### With API key
 
 Your API key can either be stored directly in plain text in your
 `~/.config/linx-client.conf` file, such as:
@@ -50,10 +50,11 @@ Your API key can either be stored directly in plain text in your
 ```
 
 Or you can use an external tool, such as [pass](https://www.passwordstore.org/)
-to store it encrypted.
+to store it as encrypted.
 
 If you specify the config key `apikeycmd`, it will take precedence over the
-`apikey` config key, and execute it when it needs the token.
+`apikey` config key, and will run and use the first line of output from that
+command when it performs any request.
 
 ```json
 {
