@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/minio/sha256-simd"
 )
@@ -17,9 +19,12 @@ func checkErr(err error) {
 }
 
 func getInput(query string, allowBlank bool) (input string) {
+	scanner := bufio.NewScanner(os.Stdin)
+
 	for input == "" {
 		fmt.Print(query + ": ")
-		fmt.Scanf("%s\n", &input)
+		scanner.Scan()
+		input = strings.TrimSpace(scanner.Text())
 
 		if allowBlank {
 			break
