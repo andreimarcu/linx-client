@@ -17,9 +17,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/timshannon/config"
 	"github.com/atotto/clipboard"
 	"github.com/mutantmonkey/golinx/progress"
+	"github.com/timshannon/config"
 )
 
 type RespOkJSON struct {
@@ -37,9 +37,10 @@ type RespErrJSON struct {
 }
 
 var Config struct {
-	siteurl string
-	logfile string
-	apikey  string
+	siteurl   string
+	logfile   string
+	apikey    string
+	apikeycmd string
 }
 
 var keys map[string]string
@@ -282,6 +283,7 @@ func parseConfig(configPath string) {
 	Config.siteurl = cfg.String("siteurl", "")
 	Config.logfile = cfg.String("logfile", "")
 	Config.apikey = cfg.String("apikey", "")
+	Config.apikeycmd = cfg.String("apikeycmd", "")
 
 	if Config.siteurl == "" || Config.logfile == "" {
 		fmt.Println("Configuring linx-client")
@@ -308,8 +310,13 @@ func parseConfig(configPath string) {
 		}
 		cfg.SetValue("logfile", Config.logfile)
 
-		if Config.apikey == "" {
-			Config.apikey = getInput("API key (leave blank if instance is public)", true)
+		if Config.apikeycmd == "" && Config.apikey == "" {
+			Config.apikey = getInput("API key retreival command (ex 'pass show linx-client', leave blank if instance is public)", true)
+		}
+		cfg.SetValue("apikeycmd", Config.apikeycmd)
+
+		if Config.apikey == "" && Config.apikeycmd == "" {
+			Config.apikey = getInput("API key (will be stored in plain text, leave blank if instance is public)", true)
 		}
 		cfg.SetValue("apikey", Config.apikey)
 
