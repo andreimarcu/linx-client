@@ -31,7 +31,7 @@ Configuring linx-client
 
 Site url (ex: https://linx.example.com/): https://linx.example.com/
 Logfile path (ex: ~/.linxlog): ~/.linxlog
-API key retreival command (ex 'pass show linx-client', leave blank if instance is public): pass show linx-client
+API key retreival command (leave blank if instance is public, ex: pass show linx-client): pass show linx-client
 Configuration written at /home/kalle/.config/linx-client.conf
 ```
 

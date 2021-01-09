@@ -327,12 +327,12 @@ func parseConfig(configPath string) {
 		cfg.SetValue("logfile", Config.logfile)
 
 		if Config.apikeycmd == "" && Config.apikey == "" {
-			Config.apikeycmd = getInput("API key retreival command (ex 'pass show linx-client', leave blank if instance is public)", true)
+			Config.apikeycmd = getInput("API key retreival command (leave blank if instance is public, ex: pass show linx-client)", true)
 		}
 		cfg.SetValue("apikeycmd", Config.apikeycmd)
 
 		if Config.apikey == "" && Config.apikeycmd == "" {
-			Config.apikey = getInput("API key (will be stored in plain text, leave blank if instance is public)", true)
+			Config.apikey = getInput("API key (leave blank if instance is public, will be stored in plain text)", true)
 		}
 		cfg.SetValue("apikey", Config.apikey)
 
