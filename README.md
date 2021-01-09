@@ -70,14 +70,14 @@ arguments, `show`, and `my key`. Whereas `pass show my key` would resolve as
 the command `pass` and the 3 arguments `show`, `my`, and `key`. Different
 programs handle argument grouping differently. But for [pass](https://www.passwordstore.org/)
 in particular the latter would be an invalid command as it only expects 1 pass
-key name.
+name.
 
 
 ### Without API key (public instance)
 
 By leaving both `apikey` and `apikeycmd` empty, linx-client will assume the
 target instance is publicly writable and will then perform its requests without
-any API key.
+an API key.
 
 
 Usage
