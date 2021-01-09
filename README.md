@@ -35,6 +35,51 @@ API key retreival command (leave blank for plain token or if instance is public,
 Configuration written at /home/kalle/.config/linx-client.conf
 ```
 
+
+### Loading API key from external application
+
+Your API key can either be stored directly in plain text in your
+`~/.config/linx-client.conf` file, such as:
+
+```json
+{
+    "apikey": "your-api-key-here",
+    "logfile": "/home/you/.linxlog",
+    "siteurl": "https://linx.example.com/"
+}
+```
+
+Or you can use an external tool, such as [pass](https://www.passwordstore.org/)
+to store it encrypted.
+
+If you specify the config key `apikeycmd`, it will take precedence over the
+`apikey` config key, and execute it when it needs the token.
+
+```json
+{
+    "apikey": "",
+    "apikeycmd": "pass show linx-client",
+    "logfile": "/home/you/.linxlog",
+    "siteurl": "https://linx.example.com/"
+}
+```
+
+The `apikeycmd` config key does support quoting. Specifying
+`pass show 'my key'` will resolve in running command `pass` with the 2
+arguments, `show`, and `my key`. Whereas `pass show my key` would resolve as
+the command `pass` and the 3 arguments `show`, `my`, and `key`. Different
+programs handle argument grouping differently. But for [pass](https://www.passwordstore.org/)
+in particular the latter would be an invalid command as it only expects 1 pass
+key name.
+
+
+### Without API key (public instance)
+
+By leaving both `apikey` and `apikeycmd` empty, linx-client will assume the
+target instance is publicly writable and will then perform its requests without
+any API key.
+
+
 Usage
 ----- 
 
