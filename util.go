@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/kballard/go-shellquote"
 	"github.com/minio/sha256-simd"
 )
 
@@ -35,8 +36,31 @@ func getInput(query string, allowBlank bool) (input string) {
 	return
 }
 
-func runCmdFirstLine(name string) (string, error) {
-	cmd := exec.Command(name)
+func validateCommand(cmdAndArgs string) error {
+	split, err := shellquote.Split(cmdAndArgs)
+	if err != nil {
+		return err
+	}
+
+	if len(split) == 0 {
+		return fmt.Errorf("No command supplied")
+	}
+
+	cmd := split[0]
+	if _, err = exec.LookPath(cmd); err != nil {
+		return fmt.Errorf("Command not found: %s", cmd)
+	}
+
+	return nil
+}
+
+func splitCmdAndArgs(cmdAndArgs string) (string, []string, error) {
+	split, err := shellquote.Split(cmdAndArgs)
+	return split[0], split[1:], err
+}
+
+func runCmdFirstLine(cmdAndArgs string) (string, error) {
+	cmd := exec.Command(cmdAndArgs)
 	var stdout io.ReadCloser
 	var err error
 
@@ -45,7 +69,7 @@ func runCmdFirstLine(name string) (string, error) {
 	}
 
 	if err = cmd.Start(); err != nil {
-		return "", fmt.Errorf("start program: %s: %w", name, err)
+		return "", fmt.Errorf("start program: %s: %w", cmdAndArgs, err)
 	}
 
 	defer stdout.Close()

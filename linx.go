@@ -330,7 +330,21 @@ func parseConfig(configPath string) {
 		cfg.SetValue("logfile", Config.logfile)
 
 		if Config.apikeycmd == "" && Config.apikey == "" {
-			Config.apikeycmd = getInput("API key retreival command (leave blank if instance is public, ex: pass show linx-client)", true)
+			for {
+				Config.apikeycmd = getInput("API key retreival command (leave blank for plain token or if instance is public, ex: pass show linx-client)", true)
+
+				if Config.apikeycmd == "" {
+					break
+				}
+
+				err := validateCommand(Config.apikeycmd)
+
+				if err != nil {
+					fmt.Printf("Invalid API key retreival command: %v\n", err)
+				} else {
+					break
+				}
+			}
 		}
 		cfg.SetValue("apikeycmd", Config.apikeycmd)
 
