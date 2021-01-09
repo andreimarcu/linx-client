@@ -98,6 +98,10 @@ func upload(filePath string, deleteKey string, accessKey string, randomize bool,
 	var fileName string
 	var ssum string
 
+	// Need to fetch this before we setup the progress reader
+	// as it can conflict with the apikeycmd output
+	apikey := getApiKey()
+
 	if filePath == "-" {
 		byt, err := ioutil.ReadAll(os.Stdin)
 		checkErr(err)
@@ -138,7 +142,7 @@ func upload(filePath string, deleteKey string, accessKey string, randomize bool,
 	req.Header.Set("User-Agent", "linx-client")
 	req.Header.Set("Accept", "application/json")
 
-	if apikey := getApiKey(); apikey != "" {
+	if apikey != "" {
 		req.Header.Set("Linx-Api-Key", apikey)
 	}
 	if deleteKey != "" {
@@ -250,7 +254,10 @@ func getApiKey() string {
 	}
 
 	apikey, err := runCmdFirstLine(Config.apikeycmd)
-	checkErr(err)
+
+	if err != nil {
+		checkErr(fmt.Errorf("Failed to retrieve API key: %w", err))
+	}
 
 	if apikey == "" {
 		checkErr(fmt.Errorf("Command did not produce an API key: %s", Config.apikeycmd))

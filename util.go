@@ -37,33 +37,40 @@ func getInput(query string, allowBlank bool) (input string) {
 }
 
 func validateCommand(cmdAndArgs string) error {
-	split, err := shellquote.Split(cmdAndArgs)
-	if err != nil {
-		return err
-	}
-
-	if len(split) == 0 {
-		return fmt.Errorf("No command supplied")
-	}
-
-	cmd := split[0]
-	if _, err = exec.LookPath(cmd); err != nil {
-		return fmt.Errorf("Command not found: %s", cmd)
-	}
-
-	return nil
+	_, _, err := splitCmdAndArgs(cmdAndArgs)
+	return err
 }
 
 func splitCmdAndArgs(cmdAndArgs string) (string, []string, error) {
 	split, err := shellquote.Split(cmdAndArgs)
+
+	if err != nil {
+		return "", nil, err
+	}
+
+	if len(split) == 0 {
+		return "", nil, fmt.Errorf("no command supplied")
+	}
+
+	cmd := split[0]
+	if _, err = exec.LookPath(cmd); err != nil {
+		return "", nil, fmt.Errorf("command not found: %s", cmd)
+	}
+
 	return split[0], split[1:], err
 }
 
 func runCmdFirstLine(cmdAndArgs string) (string, error) {
-	cmd := exec.Command(cmdAndArgs)
-	var stdout io.ReadCloser
-	var err error
+	path, args, err := splitCmdAndArgs(cmdAndArgs)
+	if err != nil {
+		return "", err
+	}
 
+	cmd := exec.Command(path, args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+
+	var stdout io.ReadCloser
 	if stdout, err = cmd.StdoutPipe(); err != nil {
 		return "", fmt.Errorf("read from stdout: %w", err)
 	}
@@ -72,10 +79,13 @@ func runCmdFirstLine(cmdAndArgs string) (string, error) {
 		return "", fmt.Errorf("start program: %s: %w", cmdAndArgs, err)
 	}
 
-	defer stdout.Close()
 	scanner := bufio.NewReader(stdout)
 
 	line, err := scanner.ReadString('\n')
+
+	if err := cmd.Wait(); err != nil {
+		return line, err
+	}
 
 	if err == io.EOF {
 		return line, nil
