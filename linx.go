@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -138,8 +139,8 @@ func upload(filePath string, deleteKey string, accessKey string, randomize bool,
 	req.Header.Set("User-Agent", "linx-client")
 	req.Header.Set("Accept", "application/json")
 
-	if Config.apikey != "" {
-		req.Header.Set("Linx-Api-Key", Config.apikey)
+	if apikey := getApiKey(); apikey != "" {
+		req.Header.Set("Linx-Api-Key", apikey)
 	}
 	if deleteKey != "" {
 		req.Header.Set("Linx-Delete-Key", deleteKey)
@@ -222,8 +223,8 @@ func deleteUrl(url string) {
 	req.Header.Set("User-Agent", "linx-client")
 	req.Header.Set("Linx-Delete-Key", deleteKey)
 
-	if Config.apikey != "" {
-		req.Header.Set("Linx-Api-Key", Config.apikey)
+	if apikey := getApiKey(); apikey != "" {
+		req.Header.Set("Linx-Api-Key", apikey)
 	}
 
 	client := &http.Client{}
@@ -238,6 +239,21 @@ func deleteUrl(url string) {
 		checkErr(errors.New("Could not delete " + url))
 	}
 
+}
+
+func getApiKey() string {
+	if Config.apikey != "" {
+		return Config.apikey
+	}
+
+	if Config.apikeycmd == "" {
+		return ""
+	}
+
+	out, err := exec.Command(Config.apikeycmd).Output()
+	checkErr(err)
+
+	return string(out)
 }
 
 func addKey(url string, deleteKey string) {
