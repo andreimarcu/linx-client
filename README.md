@@ -1,3 +1,10 @@
+# Development on this repository has been frozen.   
+
+Feel free to send a pull request if you are maintaining an active fork of this project to add a link to your repository in this readme.
+
+---
+
+
 linx-client
 ======
 
@@ -33,8 +40,7 @@ Site url (ex: https://linx.example.com/): https://linx.example.com/
 Logfile path (ex: ~/.linxlog): ~/.linxlog  
 API key (leave blank if instance is public):  
   
-Configuration written at ~/.config/linx-client.conf  
-```
+Configuration written at ~/.config/linx-client.conf  ``
 
 Usage
 ----- 
